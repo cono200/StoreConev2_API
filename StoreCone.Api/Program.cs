@@ -12,6 +12,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ProveedorServices>();
 builder.Services.AddSingleton<ProductoServices>();
 builder.Services.AddSingleton<MermaServices>();
+builder.Services.AddSingleton<UsuarioServices>();
 
 
 var app = builder.Build();
