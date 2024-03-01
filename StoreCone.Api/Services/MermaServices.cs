@@ -20,7 +20,7 @@ namespace StoreCone.Api.Services
             mongoClient.GetDatabase(databaseSettings.Value.DatabaseName);
             _mermasCollection =
             mongoDB.GetCollection<MermasModel>
-            (databaseSettings.Value.CollectionName);
+            (databaseSettings.Value.MermaCollectioName); //AQUI SE PONE EL NOMBRE QUE PUSIMOS EN LA CARPETA DE CONFIGURATION (DATABASESETTINGS)
         }
 
         public async Task<List<MermasModel>> GetAsync() =>
