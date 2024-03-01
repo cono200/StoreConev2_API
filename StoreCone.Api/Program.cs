@@ -10,7 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<ProveedorServices>();
-builder.Services.AddSingleton<MermaServices>();
+builder.Services.AddSingleton<ProductoServices>();
 
 var app = builder.Build();
 
