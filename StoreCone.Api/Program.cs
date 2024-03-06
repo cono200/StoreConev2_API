@@ -13,6 +13,8 @@ builder.Services.AddSingleton<ProveedorServices>();
 builder.Services.AddSingleton<ProductoServices>();
 builder.Services.AddSingleton<MermaServices>();
 builder.Services.AddSingleton<UsuarioServices>();
+builder.Services.AddSingleton<HistorialServices>();
+
 
 
 var app = builder.Build();
