@@ -38,8 +38,12 @@ public class ProductoController : ControllerBase
 
         await _productoServices.InsertarProducto(producto);
 
-        return Created("Created", true);
+        // Obtiene el nombre del proveedor después de insertar el producto
+        producto = await _productoServices.ProductoPorId(producto.Id);
+
+        return Created("Created", producto);
     }
+
 
     //ELIMINAR
     [HttpDelete("Borrar/{Id}")]
@@ -60,8 +64,13 @@ public class ProductoController : ControllerBase
         producto.Id = Id;
 
         await _productoServices.EditarProducto(producto);
-        return Created("Created", true);
+
+        // Obtiene el nombre del proveedor después de actualizar el producto
+        producto = await _productoServices.ProductoPorId(producto.Id);
+
+        return Created("Created", producto);
     }
+
 
     //BUSCAR POR ID
     [HttpGet("Buscar/{Id}")]

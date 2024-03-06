@@ -18,7 +18,7 @@ namespace StoreCone.Api.Models
         public string Tipo_de_merma { get; set; } =string.Empty;
         [BsonElement("Fecha_ingreso")]
 
-        public DateTime Fecha_ingreso { get; set; } 
+        public DateTime Fecha_ingreso { get; set; }
         [BsonElement("Nombre_producto")]
 
         public string Nombre_producto { get; set; } = string.Empty;

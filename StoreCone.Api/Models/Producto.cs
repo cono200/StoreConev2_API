@@ -15,10 +15,14 @@ public class Producto
     public int Codigo { get; set; }
     [BsonElement("Seccion")]
     public string Seccion { get; set; } = string.Empty;
-    [BsonElement("Proveedor")]
-    public string Proveedor { get; set; } = string.Empty;
+    [BsonElement("ProveedorId")]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string ProveedorId { get; set; } = string.Empty;
     [BsonElement("Descripcion")]
     public string Descripcion { get; set; } = string.Empty;
     [BsonElement("Precio")]
     public int Precio { get; set; }
+
+    [BsonIgnore] // Ignora este campo al guardar en la base de datos
+    public string Proveedor { get; set; } = string.Empty; // Agrega de nuevo la propiedad Proveedor
 }

@@ -9,6 +9,8 @@ namespace StoreCone.Api.Services;
 public class ProductoServices
 {
     private readonly IMongoCollection<Producto> _productoCollection;
+    private readonly IMongoCollection<Proveedor> _proveedorCollection; // Agrega una referencia a la colección de proveedores
+
     public ProductoServices(
         IOptions<DatabaseSettings> databaseSettings)
     {
@@ -20,11 +22,22 @@ public class ProductoServices
         _productoCollection =
         mongoDB.GetCollection<Producto>
             (databaseSettings.Value.ProdCollectionName);
+        _proveedorCollection =
+        mongoDB.GetCollection<Proveedor>
+            (databaseSettings.Value.CollectionName); // Inicializa la colección de proveedores
     }
 
     //LISTAR TODOS LOS REGISTROS
-    public async Task<List<Producto>> GetAsync() =>
-        await _productoCollection.Find(_ => true).ToListAsync();
+    public async Task<List<Producto>> GetAsync()
+    {
+        var productos = await _productoCollection.Find(_ => true).ToListAsync();
+        foreach (var producto in productos)
+        {
+            var proveedor = await _proveedorCollection.FindAsync(new BsonDocument { { "_id", new ObjectId(producto.ProveedorId) } }).Result.FirstAsync();
+            producto.Proveedor = proveedor.Nombre; // Agrega el nombre del proveedor al producto
+        }
+        return productos;
+    }
 
     //INSERTAR UN REGISTRO
     public async Task InsertarProducto(Producto producto)
@@ -49,6 +62,9 @@ public class ProductoServices
     //ENCONTRAR POR ID
     public async Task<Producto> ProductoPorId(string Id)
     {
-        return await _productoCollection.FindAsync(new BsonDocument { { "_id", new ObjectId(Id) } }).Result.FirstAsync();
+        var producto = await _productoCollection.FindAsync(new BsonDocument { { "_id", new ObjectId(Id) } }).Result.FirstAsync();
+        var proveedor = await _proveedorCollection.FindAsync(new BsonDocument { { "_id", new ObjectId(producto.ProveedorId) } }).Result.FirstAsync();
+        producto.Proveedor = proveedor.Nombre; // Agrega el nombre del proveedor al producto //INTENTAR PRIMERO CON ESTO
+        return producto;
     }
 }
