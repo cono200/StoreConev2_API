@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using StoreCone.Api.Models; // Asegúrate de tener esta directiva para poder usar la clase Proveedor
 
 namespace Drivers.Api.Models;
 
@@ -24,5 +25,5 @@ public class Producto
     public int Precio { get; set; }
 
     [BsonIgnore] // Ignora este campo al guardar en la base de datos
-    public string Proveedor { get; set; } = string.Empty; // Agrega de nuevo la propiedad Proveedor
+    public Proveedor Proveedor { get; set; } // Agrega una propiedad Proveedor de tipo Proveedor
 }
