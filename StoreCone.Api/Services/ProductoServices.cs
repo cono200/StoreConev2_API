@@ -25,52 +25,116 @@ public class ProductoServices
 
     public async Task<List<Producto>> GetAsync()
     {
-        var productos = await _productoCollection.Find(_ => true).ToListAsync();
-        foreach (var producto in productos)
+        try
         {
-            var proveedores = await _proveedorCollection.FindAsync(new BsonDocument { { "_id", new ObjectId(producto.ProveedorId) } }).Result.ToListAsync();
-            if (proveedores.Any())
+            var productos = await _productoCollection.Find(_ => true).ToListAsync();
+            foreach (var producto in productos)
             {
-                var proveedor = proveedores.First();
-                producto.Proveedor = proveedor;
+                var proveedores = await _proveedorCollection.FindAsync(new BsonDocument { { "_id", new ObjectId(producto.ProveedorId) } }).Result.ToListAsync();
+                if (proveedores.Any())
+                {
+                    var proveedor = proveedores.First();
+                    producto.Proveedor = proveedor;
+                }
             }
+            return productos;
         }
-        return productos;
+        catch (Exception ex)
+        {
+            throw new Exception("Error al obtener los productos de la base de datos", ex);
+        }
     }
+
 
     public async Task InsertarProducto(Producto producto)
     {
-        await _productoCollection.InsertOneAsync(producto);
-
-        var historialProducto = new HistorialModel
+        try
         {
-            ProductoId = producto.Id,
-            Fecha = DateTime.Now,
-            Accion= "Registro",
-            Producto = producto.Nombre
+            if (producto == null)
+            {
+                throw new ArgumentNullException(nameof(producto), "El producto no puede ser null");
+            }
+            await _productoCollection.InsertOneAsync(producto);
 
-        };
+            var historialProducto = new HistorialModel
+            {
+                ProductoId = producto.Id,
+                Fecha = DateTime.Now,
+                Accion = "Registro",
+                Producto = producto.Nombre
+            };
 
-        await _historialServices.InsertarHistorialProducto(historialProducto);
+            await _historialServices.InsertarHistorialProducto(historialProducto);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al insertar el producto en la base de datos", ex);
+        }
     }
 
     public async Task BorrarProducto(string Id)
     {
-        var filter = Builders<Producto>.Filter.Eq(s => s.Id, Id);
-        await _productoCollection.DeleteOneAsync(filter);
+        try
+        {
+            var producto = await ProductoPorId(Id);
+            var filter = Builders<Producto>.Filter.Eq(s => s.Id, Id);
+            var deleteResult=await
+            _productoCollection.DeleteOneAsync(filter);
+
+            if (deleteResult.DeletedCount == 0)
+            {
+                throw new Exception($"No se pudo borrar el producto con el ID: {Id}");
+            }
+            var historialProducto = new HistorialModel
+            {
+                ProductoId = Id,
+                Fecha = DateTime.Now,
+                Accion = "Eliminación",
+                Producto = producto.Nombre
+            };
+
+            await _historialServices.InsertarHistorialProducto(historialProducto);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al borrar el producto de la base de datos", ex);
+        }
     }
 
     public async Task EditarProducto(Producto producto)
     {
-        var filter = Builders<Producto>.Filter.Eq(s => s.Id, producto.Id);
-        await _productoCollection.ReplaceOneAsync(filter, producto);
+        try
+        {
+            var filter = Builders<Producto>.Filter.Eq(s => s.Id, producto.Id);
+            await _productoCollection.ReplaceOneAsync(filter, producto);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al editar el producto en la base de datos", ex);
+        }
     }
+
 
     public async Task<Producto> ProductoPorId(string Id)
     {
-        var producto = await _productoCollection.FindAsync(new BsonDocument { { "_id", new ObjectId(Id) } }).Result.FirstAsync();
-        var proveedor = await _proveedorCollection.FindAsync(new BsonDocument { { "_id", new ObjectId(producto.ProveedorId) } }).Result.FirstAsync();
-        producto.Proveedor = proveedor;
-        return producto;
+        try
+        {
+            var producto = await _productoCollection.FindAsync(new BsonDocument { { "_id", new ObjectId(Id) } }).Result.FirstAsync();
+            if (producto == null)
+            {
+                throw new Exception($"No se encontró ningún producto con el ID: {Id}");
+            }
+
+            var proveedor = await _proveedorCollection.FindAsync(new BsonDocument { { "_id", new ObjectId(producto.ProveedorId) } }).Result.FirstAsync();
+          
+
+            producto.Proveedor = proveedor;
+            return producto;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al obtener el producto o el proveedor de la base de datos", ex);
+        }
     }
+
 }

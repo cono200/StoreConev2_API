@@ -11,38 +11,68 @@ public class ProductoController : ControllerBase
 {
     private readonly ILogger<ProductoController> _logger;
     private readonly ProductoServices _productoServices;
+    private readonly ProveedorServices _proveedorServices;
     public ProductoController(
         ILogger<ProductoController> logger,
-        ProductoServices productoServices)
+        ProductoServices productoServices,
+        ProveedorServices proveedorServices)
     {
         _logger = logger;
         _productoServices = productoServices;
+        _proveedorServices = proveedorServices;
     }
     //MOSTRAR
     [HttpGet("Listar")]
     public async Task<IActionResult> GetProducto()
     {
-        var producto = await _productoServices.GetAsync();
-        return Ok(producto);
+        try
+        {
+            var producto = await _productoServices.GetAsync();
+            return Ok(producto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al obtener los productos");
+            return StatusCode(500, "Error interno del servidor. Por favor, inténtalo de nuevo más tarde.");
+        }
     }
+
 
 
     //INSERTAR
     [HttpPost("Crear")]
     public async Task<IActionResult> CreateDriver([FromBody] Producto producto)
     {
-        if (producto == null)
-            return BadRequest();
-        if (producto.Nombre == string.Empty)
-            ModelState.AddModelError("Nombre", "El producto no debe estar vacio");
+        try
+        {
+            if (producto == null)
+                return BadRequest("El producto no puede ser null");
+            if (producto.Nombre == string.Empty)
+                return BadRequest("El nombre del producto no puede estar vacío");
 
-        await _productoServices.InsertarProducto(producto);
+            if (string.IsNullOrEmpty(producto.ProveedorId))
+                return BadRequest("El ID del proveedor no puede estar vacío");
 
-        // Obtiene el nombre del proveedor después de insertar el producto
-        producto = await _productoServices.ProductoPorId(producto.Id);
+            // verificar si el proveedor existe en la base de datos
+            var proveedor = await _proveedorServices.GetProveedorId(producto.ProveedorId);
+            if (proveedor == null)
+                return BadRequest("El proveedor no existe");
 
-        return Created("Created", producto);
+            await _productoServices.InsertarProducto(producto);
+
+            // Obtiene el nombre del proveedor después de insertar el producto
+            producto = await _productoServices.ProductoPorId(producto.Id);
+
+            return Created("Created", producto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al crear el producto");
+            return StatusCode(500, "Error interno del servidor. Por favor, inténtalo de nuevo más tarde.");
+        }
     }
+
+
 
 
     //ELIMINAR
@@ -57,26 +87,54 @@ public class ProductoController : ControllerBase
     [HttpPut("Editar")]
     public async Task<IActionResult> EditarProducto([FromBody] Producto producto, string Id)
     {
-        if (producto == null)
-            return BadRequest();
-        if (producto.Nombre == string.Empty)
-            ModelState.AddModelError("Nombre", "El producto no debe estar vacio");
-        producto.Id = Id;
+        try
+        {
+            if (producto == null)
+                return BadRequest("El producto no puede ser null");
+            if (string.IsNullOrEmpty(producto.Nombre))
+                return BadRequest("El nombre del producto no puede estar vacío");
+            if (producto.Codigo == 0)
+                return BadRequest("El código del producto no puede ser cero");
 
-        await _productoServices.EditarProducto(producto);
+            producto.Id = Id;
+            await _productoServices.EditarProducto(producto);
 
-        // Obtiene el nombre del proveedor después de actualizar el producto
-        producto = await _productoServices.ProductoPorId(producto.Id);
+            // Obtiene el nombre del proveedor después de actualizar el producto
+            producto = await _productoServices.ProductoPorId(producto.Id);
+            if (producto == null)
+                return NotFound($"No se encontró ningún producto con el ID: {producto.Id}");
 
-        return Created("Created", producto);
+            return Created("Created", producto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al editar el producto");
+            return StatusCode(500, "Error interno del servidor. Por favor, inténtalo de nuevo más tarde.");
+        }
     }
+
 
 
     //BUSCAR POR ID
     [HttpGet("Buscar/{Id}")]
     public async Task<IActionResult> ProductoPorId(string Id)
     {
-        return Ok(await _productoServices.ProductoPorId(Id));
+        try
+        {
+            var producto = await _productoServices.ProductoPorId(Id);
+          //Si no jala descomentarar aqui
+            //if (producto == null)
+            //{
+            //    return NotFound($"No se encontró ningún producto con el ID: {Id}");
+            //}
+            return Ok(producto);
     }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error al obtener el producto con el ID: {Id}");
+            return StatusCode(500, "Error interno del servidor o ID incorrecto. Por favor, inténtalo de nuevo.");
+}
+    }
+
 }
 

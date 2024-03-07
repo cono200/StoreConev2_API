@@ -23,63 +23,99 @@ public class MermasController : ControllerBase
     }
 
 
-    [HttpGet]
-    public async Task<IActionResult> GetProveedor()
+    //MOSTRAR
+    [HttpGet("Listar")]
+    public async Task<IActionResult> GetMermas()
     {
-        var proveedor = await _mermasServices.GetAsync();
-        return Ok(proveedor);
+        try
+        {
+            var proveedor = await _mermasServices.GetAsync();
+            return Ok(proveedor);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al obtener los proveedores");
+            return StatusCode(500, "Error interno del servidor. Por favor, inténtalo de nuevo más tarde.");
+        }
     }
 
-
+    //BUSCAR POR ID
     [HttpGet("{id}")]
-
-    public async Task<IActionResult> GetProveedorById(string id)
+    public async Task<IActionResult> GetMermabyId(string id)
     {
-        return Ok(await _mermasServices.GetProveedorId(id));
+        try
+        {
+            var merma = await _mermasServices.GetMermabyId(id);
+            if (merma == null)
+                return NotFound($"No se encontró ninguna merma con el ID: {id}");
+
+            return Ok(merma);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al obtener la merma por ID");
+            return StatusCode(500, "Error interno del servidor. Por favor, inténtalo de nuevo más tarde.");
+        }
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateProveedor([FromBody] MermasModel mermas)
+    //INSERTAR
+    [HttpPost("Insertar")]
+    public async Task<IActionResult> InsertMerma([FromBody] MermasModel mermas)
     {
-        if (mermas == null)
+        try
         {
-            return BadRequest();
-        }
-        if (mermas.Codigo == string.Empty)
-        {
-            ModelState.AddModelError("Codigo", "El codigo no debe de estar vacio");
-        }
+            if (mermas == null)
+                return BadRequest("La merma no puede ser null");
+            if (mermas.Codigo == string.Empty)
+                return BadRequest("El código de la merma no puede estar vacío");
 
-        await _mermasServices.InsertMerma(mermas);
-        return Created("Created", true);
+            await _mermasServices.InsertMerma(mermas);
+            return Created("Created", true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al insertar la merma");
+            return StatusCode(500, "Error interno del servidor. Por favor, inténtalo de nuevo más tarde.");
+        }
     }
 
-    [HttpPut("{id}")]
-
-    public async Task<IActionResult> UpdateProveedor([FromBody] MermasModel mermas, string id)
+    //ACTUALIZAR
+    [HttpPut("Update")]
+    public async Task<IActionResult> UpdateMerma([FromBody] MermasModel mermas, string id)
     {
-        if (mermas == null)
+        try
         {
-            return BadRequest();
+            if (mermas == null)
+                return BadRequest("La merma no puede ser null");
+            if (mermas.Codigo == string.Empty)
+                return BadRequest("El código de la merma no puede estar vacío");
+
+            mermas.Id = id;
+            await _mermasServices.UpdateMerma(mermas);
+            return Created("Created", true);
         }
-        if (mermas.Codigo == string.Empty)
+        catch (Exception ex)
         {
-            ModelState.AddModelError("Codigo", "El Codigo no deberia estar vacio");
+            _logger.LogError(ex, "Error al actualizar la merma");
+            return StatusCode(500, "Error interno del servidor. Por favor, inténtalo de nuevo más tarde.");
         }
-
-        mermas.Id = id;
-
-        await _mermasServices.UpdateMerma(mermas);
-        return Created("Created", true);
     }
 
-    [HttpDelete("{id}")]
-
+    //ELIMINAR
+    [HttpDelete("Delete")]
     public async Task<IActionResult> DeleteProveedor(string id)
     {
-        await _mermasServices.DeleteMerma(id);
-
-        return NoContent();
+        try
+        {
+            await _mermasServices.DeleteMerma(id);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al eliminar la merma");
+            return StatusCode(500, "Error interno del servidor. Por favor, inténtalo de nuevo más tarde.");
+        }
     }
 }
+
 

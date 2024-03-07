@@ -24,7 +24,7 @@ public class ProveedorController : ControllerBase
     }
 
 
-    [HttpGet]
+    [HttpGet("Listar")]
     public async Task<IActionResult> GetProveedor()
     {
         var proveedor = await _proveedorServices.GetAsync();
@@ -39,7 +39,7 @@ public class ProveedorController : ControllerBase
         return Ok(await _proveedorServices.GetProveedorId(id));
     }
 
-    [HttpPost]
+    [HttpPost("Create")]
     public async Task<IActionResult> CreateProveedor([FromBody] Proveedor proveedor)
     {
         if(proveedor == null)
@@ -55,7 +55,7 @@ public class ProveedorController : ControllerBase
         return Created("Created", true);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("Update")]
 
     public async Task<IActionResult> UpdateProveedor([FromBody] Proveedor proveedor, string id)
     {
@@ -74,7 +74,7 @@ public class ProveedorController : ControllerBase
         return Created("Created", true);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("Deleteby{id}")]
 
     public async Task<IActionResult> DeleteProveedor(string id)
     {

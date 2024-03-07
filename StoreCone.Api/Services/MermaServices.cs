@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Drivers.Api.Models;
+using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using StoreCone.Api.Configuration;
@@ -10,9 +11,11 @@ namespace StoreCone.Api.Services
     public class MermaServices
     {
         private readonly IMongoCollection<MermasModel> _mermasCollection;
+        private readonly HistorialServices _historialServices;
+
 
         public MermaServices(
-            IOptions<DatabaseSettings> databaseSettings)
+            IOptions<DatabaseSettings> databaseSettings, HistorialServices historialServices)
         {
             var mongoClient = new MongoClient(databaseSettings.Value.ConnectionString);
 
@@ -21,12 +24,13 @@ namespace StoreCone.Api.Services
             _mermasCollection =
             mongoDB.GetCollection<MermasModel>
             (databaseSettings.Value.MermaCollectioName); //AQUI SE PONE EL NOMBRE QUE PUSIMOS EN LA CARPETA DE CONFIGURATION (DATABASESETTINGS)
+            _historialServices = historialServices;
         }
 
         public async Task<List<MermasModel>> GetAsync() =>
     await _mermasCollection.Find(_ => true).ToListAsync();
 
-        public async Task<MermasModel> GetProveedorId(string id)
+        public async Task<MermasModel> GetMermabyId(string id)
         {
             return await _mermasCollection.FindAsync(new BsonDocument
         {{"_id", new ObjectId(id)}}).Result.FirstAsync();
@@ -36,6 +40,16 @@ namespace StoreCone.Api.Services
         {
             mermas.Fecha_ingreso=DateTime.Now;
             await _mermasCollection.InsertOneAsync(mermas);
+            var historialProducto = new HistorialModel
+            {
+                ProductoId = mermas.Id,
+                Fecha = DateTime.Now,
+                Accion = "Mermas",
+                Producto = mermas.Nombre_producto
+
+            };
+
+            await _historialServices.InsertarHistorialProducto(historialProducto);
         }
 
         public async Task UpdateMerma(MermasModel mermas)
