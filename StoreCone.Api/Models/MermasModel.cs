@@ -12,7 +12,7 @@ namespace StoreCone.Api.Models
 
         [BsonElement("Codigo")]
 
-        public string Codigo { get; set; } = string.Empty;
+        public long Codigo { get; set; }
         [BsonElement("Tipo_de_merma")]
 
         public string Tipo_de_merma { get; set; } =string.Empty;

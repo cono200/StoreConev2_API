@@ -66,7 +66,7 @@ public class MermasController : ControllerBase
         {
             if (mermas == null)
                 return BadRequest("La merma no puede ser null");
-            if (mermas.Codigo == string.Empty)
+            if (mermas.Codigo == 0)
                 return BadRequest("El código de la merma no puede estar vacío");
 
             await _mermasServices.InsertMerma(mermas);
@@ -87,7 +87,7 @@ public class MermasController : ControllerBase
         {
             if (mermas == null)
                 return BadRequest("La merma no puede ser null");
-            if (mermas.Codigo == string.Empty)
+            if (mermas.Codigo == 0)
                 return BadRequest("El código de la merma no puede estar vacío");
 
             mermas.Id = id;

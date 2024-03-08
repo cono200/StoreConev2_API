@@ -137,4 +137,29 @@ public class ProductoServices
         }
     }
 
+    public async Task<Producto> ProductoPorCodigo(int codigo)
+    {
+        try
+        {
+            var filter = Builders<Producto>.Filter.Eq(p => p.Codigo, codigo);
+            var producto = await _productoCollection.Find(filter).FirstOrDefaultAsync();
+
+            if (producto == null)
+            {
+                throw new Exception($"No se encontró ningún producto con el código: {codigo}");
+            }
+
+            var proveedorFilter = Builders<Proveedor>.Filter.Eq(p => p.Id, producto.ProveedorId);
+            var proveedor = await _proveedorCollection.Find(proveedorFilter).FirstOrDefaultAsync();
+
+            producto.Proveedor = proveedor;
+            return producto;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al obtener el producto o el proveedor de la base de datos", ex);
+        }
+    }
+
+
 }

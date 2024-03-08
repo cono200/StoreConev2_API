@@ -13,7 +13,7 @@ public class Producto
     [BsonElement("Nombre")]
     public string Nombre { get; set; } = string.Empty;
     [BsonElement("Codigo")]
-    public int Codigo { get; set; }
+    public long Codigo { get; set; }
     [BsonElement("Seccion")]
     public string Seccion { get; set; } = string.Empty;
     [BsonElement("ProveedorId")]
@@ -21,6 +21,8 @@ public class Producto
     public string ProveedorId { get; set; } = string.Empty;
     [BsonElement("Descripcion")]
     public string Descripcion { get; set; } = string.Empty;
+    [BsonElement("Imagen")] 
+    public string Imagen { get; set; } = string.Empty;
     [BsonElement("Precio")]
 
     public int Precio { get; set; }

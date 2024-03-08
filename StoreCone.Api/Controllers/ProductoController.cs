@@ -112,6 +112,22 @@ public class ProductoController : ControllerBase
             return StatusCode(500, "Error interno del servidor. Por favor, inténtalo de nuevo más tarde.");
         }
     }
+    //BUSQUEDA POR CODIGO 
+    [HttpGet("BuscarPorCodigo/{codigo}")]
+    public async Task<IActionResult> ProductoPorCodigo(int codigo)
+    {
+        try
+        {
+            var producto = await _productoServices.ProductoPorCodigo(codigo);
+            return Ok(producto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error al obtener el producto con el código: {codigo}");
+            return StatusCode(500, "Error interno del servidor o código incorrecto. Por favor, inténtalo de nuevo.");
+        }
+    }
+
 
 
 
