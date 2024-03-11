@@ -113,8 +113,8 @@ public class ProductoController : ControllerBase
         }
     }
     //BUSQUEDA POR CODIGO 
-    [HttpGet("BuscarPorCodigo/{codigo}")]
-    public async Task<IActionResult> ProductoPorCodigo(int codigo)
+    [HttpPost("BuscarPorCodigo")]
+    public async Task<IActionResult> BuscarPorCodigo([FromBody] long codigo)
     {
         try
         {

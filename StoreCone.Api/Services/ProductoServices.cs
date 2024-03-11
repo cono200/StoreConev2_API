@@ -137,7 +137,7 @@ public class ProductoServices
         }
     }
 
-    public async Task<Producto> ProductoPorCodigo(int codigo)
+    public async Task<Producto> ProductoPorCodigo(long codigo)
     {
         try
         {
