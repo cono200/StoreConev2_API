@@ -30,5 +30,5 @@ public class Producto
     public DateTime Caducidad { get; set; } 
 
     [BsonIgnore] // Ignora este campo al guardar en la base de datos
-    public Proveedor Proveedor { get; set; } // Agrega una propiedad Proveedor de tipo Proveedor
+    public Proveedor? Proveedor { get; set; } // Agrega una propiedad Proveedor de tipo Proveedor
 }

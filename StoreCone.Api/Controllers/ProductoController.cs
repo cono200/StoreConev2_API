@@ -50,13 +50,13 @@ public class ProductoController : ControllerBase
             if (producto.Nombre == string.Empty)
                 return BadRequest("El nombre del producto no puede estar vacío");
 
-            if (string.IsNullOrEmpty(producto.ProveedorId))
-                return BadRequest("El ID del proveedor no puede estar vacío");
+            if (!string.IsNullOrEmpty(producto.ProveedorId))
+            {
+                var proveedor = await _proveedorServices.GetProveedorId(producto.ProveedorId);
+                if (proveedor == null)
+                    return BadRequest("El proveedor no existe");
+            }
 
-            // verificar si el proveedor existe en la base de datos
-            var proveedor = await _proveedorServices.GetProveedorId(producto.ProveedorId);
-            if (proveedor == null)
-                return BadRequest("El proveedor no existe");
 
             await _productoServices.InsertarProducto(producto);
 
