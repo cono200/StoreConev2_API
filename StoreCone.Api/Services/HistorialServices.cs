@@ -21,5 +21,6 @@ public class HistorialServices
     {
         await _historialProductoCollection.InsertOneAsync(historialProducto);
     }
-
+    public async Task<List<HistorialModel>> GetAsync() =>
+   await _historialProductoCollection.Find(_ => true).ToListAsync();
 }

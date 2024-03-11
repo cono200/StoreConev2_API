@@ -44,7 +44,7 @@ namespace StoreCone.Api.Services
             {
                 ProductoId = mermas.Id,
                 Fecha = DateTime.Now,
-                Accion = "Mermas",
+                Accion = "Mermado",
                 Producto = mermas.Nombre_producto
 
             };

@@ -60,7 +60,7 @@ public class ProductoServices
             {
                 ProductoId = producto.Id,
                 Fecha = DateTime.Now,
-                Accion = "Registro",
+                Accion = "Registrado",
                 Producto = producto.Nombre
             };
 
@@ -89,7 +89,7 @@ public class ProductoServices
             {
                 ProductoId = Id,
                 Fecha = DateTime.Now,
-                Accion = "Eliminación",
+                Accion = "Eliminado",
                 Producto = producto.Nombre
             };
 
