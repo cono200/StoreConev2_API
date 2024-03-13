@@ -14,6 +14,7 @@ builder.Services.AddSingleton<ProductoServices>();
 builder.Services.AddSingleton<MermaServices>();
 builder.Services.AddSingleton<UsuarioServices>();
 builder.Services.AddSingleton<HistorialServices>();
+builder.Services.AddSingleton<PistolaServices>();
 
 
 

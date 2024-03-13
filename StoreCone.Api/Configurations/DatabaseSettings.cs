@@ -11,5 +11,6 @@ public class DatabaseSettings
     public string UsuarioCollectionName { get; set; } = string.Empty;
 
     public string HistorialCollectionName { get; set; } = string.Empty;
+    public string PistolaCollectionName { get; set; } = string.Empty;
 
 }
